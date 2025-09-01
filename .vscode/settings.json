@@ -1,0 +1,12 @@
+{
+  // Use the backend venv interpreter for this workspace
+  "python.defaultInterpreterPath": "${workspaceFolder}/BACKEND/.venv/Scripts/python.exe",
+  // Help Pylance find backend modules
+  "python.analysis.extraPaths": [
+    "${workspaceFolder}/BACKEND"
+  ],
+  // Load env vars from backend .env when debugging/running
+  "python.envFile": "${workspaceFolder}/BACKEND/.env",
+  // Keep analysis scoped to workspace to avoid global pollution
+  "python.analysis.diagnosticMode": "workspace"
+}

@@ -68,6 +68,24 @@ function clearValidation(inputElement) {
     }
 }
 
+const API_BASE = 'http://127.0.0.1:5000/api';
+
+async function apiFetch(path, { method = 'GET', body, token } = {}) {
+    const headers = { 'Content-Type': 'application/json' };
+    if (token) headers['Authorization'] = `Bearer ${token}`;
+    const resp = await fetch(`${API_BASE}${path}`, {
+        method,
+        headers,
+        body: body ? JSON.stringify(body) : undefined,
+    });
+    const json = await resp.json().catch(() => ({}));
+    if (!resp.ok) {
+        const msg = json.message || `Request failed (${resp.status})`;
+        throw new Error(msg);
+    }
+    return json;
+}
+
 // Login form handler
 document.getElementById('loginFormElement').addEventListener('submit', async function(e) {
     e.preventDefault();
@@ -105,16 +123,16 @@ document.getElementById('loginFormElement').addEventListener('submit', async fun
     showLoading('Signing you in...');
 
     try {
-        // This is where you'd make the API call to your Flask backend
-        const loginData = {
-            email: email.value.trim(),
-            password: password.value
-        };
+        const loginData = { email: email.value.trim(), password: password.value };
+        let response;
+        try {
+            response = await apiFetch('/login', { method: 'POST', body: loginData });
+        } catch (networkErr) {
+            // Fallback to mock in dev if backend isn't running
+            response = await mockApiCall('/api/login', loginData);
+        }
 
-        // Mock API call - replace with your actual backend endpoint
-        const response = await mockApiCall('/api/login', loginData);
-        
-        if (response.success) {
+        if (response && response.success) {
             // Store user token/session (in production, use secure methods)
             localStorage.setItem('userToken', response.token);
             localStorage.setItem('userData', JSON.stringify(response.user));
@@ -123,7 +141,7 @@ document.getElementById('loginFormElement').addEventListener('submit', async fun
             window.location.href = 'index.html';
         } else {
             hideLoading();
-            showError(password, response.message || 'Invalid credentials');
+            showError(password, (response && response.message) || 'Invalid credentials');
         }
     } catch (error) {
         hideLoading();
@@ -202,17 +220,15 @@ document.getElementById('signupFormElement').addEventListener('submit', async fu
     showLoading('Creating your account...');
 
     try {
-        // This is where you'd make the API call to your Flask backend
-        const signupData = {
-            name: name.value.trim(),
-            email: email.value.trim(),
-            password: password.value
-        };
+        const signupData = { name: name.value.trim(), email: email.value.trim(), password: password.value };
+        let response;
+        try {
+            response = await apiFetch('/signup', { method: 'POST', body: signupData });
+        } catch (networkErr) {
+            response = await mockApiCall('/api/signup', signupData);
+        }
 
-        // Mock API call - replace with your actual backend endpoint
-        const response = await mockApiCall('/api/signup', signupData);
-        
-        if (response.success) {
+        if (response && response.success) {
             hideLoading();
             alert('Account created successfully! Please sign in.');
             switchToLogin();
@@ -220,7 +236,7 @@ document.getElementById('signupFormElement').addEventListener('submit', async fu
             document.getElementById('signupFormElement').reset();
         } else {
             hideLoading();
-            showError(email, response.message || 'Account creation failed');
+            showError(email, (response && response.message) || 'Account creation failed');
         }
     } catch (error) {
         hideLoading();

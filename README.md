@@ -39,3 +39,6 @@ Next Steps
 - Wire real endpoints in `auth-script.js` and `script.js`.
 - Integrate Hugging Face for real sentiment analysis.
 - Add `.env` management and document required keys.
+
+Backend
+- See `BACKEND/README.md` for setup, environment variables, and run steps.

@@ -95,6 +95,24 @@ function analyzeSentiment(text) {
     return { emotion: 'Neutral', score: Math.random() * 30 + 50, color: '#6B7280' };
 }
 
+const API_BASE = 'http://127.0.0.1:5000/api';
+
+async function apiFetch(path, { method = 'GET', body, token } = {}) {
+    const headers = { 'Content-Type': 'application/json' };
+    if (token) headers['Authorization'] = `Bearer ${token}`;
+    const resp = await fetch(`${API_BASE}${path}`, {
+        method,
+        headers,
+        body: body ? JSON.stringify(body) : undefined,
+    });
+    const json = await resp.json().catch(() => ({}));
+    if (!resp.ok) {
+        const msg = json.message || `Request failed (${resp.status})`;
+        throw new Error(msg);
+    }
+    return json;
+}
+
 // Handle form submission
 document.getElementById('journalForm').addEventListener('submit', function(e) {
     e.preventDefault();
@@ -106,37 +124,61 @@ document.getElementById('journalForm').addEventListener('submit', function(e) {
     document.getElementById('loadingDiv').style.display = 'block';
     document.getElementById('emotionDisplay').style.display = 'none';
 
-    // Simulate API delay
-    setTimeout(() => {
-        // Analyze sentiment (mock)
-        const analysis = analyzeSentiment(entryText);
-        
-        // Display results
-        document.getElementById('emotionScore').textContent = `${analysis.emotion}: ${Math.round(analysis.score)}%`;
-        document.getElementById('emotionDetails').textContent = getEmotionMessage(analysis.emotion, analysis.score);
-        document.getElementById('emotionDisplay').style.backgroundColor = analysis.color;
-        
-    // Hide loading and show results
-        document.getElementById('loadingDiv').style.display = 'none';
-        document.getElementById('emotionDisplay').style.display = 'block';
+    (async () => {
+        const token = localStorage.getItem('userToken');
+        try {
+            if (token) {
+                const resp = await apiFetch('/journals', { method: 'POST', body: { text: entryText }, token });
+                const entry = resp.entry;
+                // Display from backend
+                document.getElementById('emotionScore').textContent = `${entry.emotion}: ${Math.round(entry.score * 100) / 1}%`;
+                document.getElementById('emotionDetails').textContent = getEmotionMessage(entry.emotion, entry.score);
+                document.getElementById('emotionDisplay').style.backgroundColor = '#4B5563';
 
-        // Add to entries
-        const newEntry = {
-            date: new Date().toISOString().split('T')[0],
-            text: entryText,
-            emotion: analysis.emotion,
-            score: Math.round(analysis.score)
-        };
-        
-        journalEntries.unshift(newEntry);
-    saveEntries(journalEntries);
-        updateRecentEntries();
-        updateChart();
-        updateStats();
+                document.getElementById('loadingDiv').style.display = 'none';
+                document.getElementById('emotionDisplay').style.display = 'block';
 
-        // Clear form
-        document.getElementById('journalEntry').value = '';
-    }, 2000);
+                // Normalize score if backend returns [0,1]
+                const scorePct = entry.score > 1 ? Math.round(entry.score) : Math.round(entry.score * 100);
+                const newEntry = {
+                    date: new Date().toISOString().split('T')[0],
+                    text: entry.text,
+                    emotion: entry.emotion,
+                    score: scorePct
+                };
+                journalEntries.unshift(newEntry);
+                saveEntries(journalEntries);
+                updateRecentEntries();
+                updateChart();
+                updateStats();
+                document.getElementById('journalEntry').value = '';
+                return;
+            }
+            throw new Error('No token, falling back');
+        } catch (err) {
+            // Fallback to local mock analysis
+            setTimeout(() => {
+                const analysis = analyzeSentiment(entryText);
+                document.getElementById('emotionScore').textContent = `${analysis.emotion}: ${Math.round(analysis.score)}%`;
+                document.getElementById('emotionDetails').textContent = getEmotionMessage(analysis.emotion, analysis.score);
+                document.getElementById('emotionDisplay').style.backgroundColor = analysis.color;
+                document.getElementById('loadingDiv').style.display = 'none';
+                document.getElementById('emotionDisplay').style.display = 'block';
+                const newEntry = {
+                    date: new Date().toISOString().split('T')[0],
+                    text: entryText,
+                    emotion: analysis.emotion,
+                    score: Math.round(analysis.score)
+                };
+                journalEntries.unshift(newEntry);
+                saveEntries(journalEntries);
+                updateRecentEntries();
+                updateChart();
+                updateStats();
+                document.getElementById('journalEntry').value = '';
+            }, 1200);
+        }
+    })();
 });
 
 function getEmotionMessage(emotion, score) {
