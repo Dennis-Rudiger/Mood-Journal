@@ -10,8 +10,12 @@ from alembic import context
 config = context.config
 
 # Interpret the config file for Python logging.
-# This line sets up loggers basically.
-fileConfig(config.config_file_name)
+# Guard against None to satisfy type checkers and avoid runtime issues.
+cfg_fname = config.config_file_name
+if cfg_fname is not None:
+    fileConfig(cfg_fname)
+else:
+    logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger('alembic.env')
 
 

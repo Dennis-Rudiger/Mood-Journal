@@ -2,6 +2,7 @@ import os
 from flask import Flask, redirect
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
+from flask_jwt_extended import JWTManager
 from flask_cors import CORS
 from dotenv import load_dotenv
 
@@ -9,6 +10,7 @@ from dotenv import load_dotenv
 
 db = SQLAlchemy()
 migrate = Migrate()
+jwt = JWTManager()
 
 
 def create_app():
@@ -28,10 +30,13 @@ def create_app():
     # Init extensions
     db.init_app(app)
     migrate.init_app(app, db)
-    # No JWT — using simple sessionless flows
+    app.config['JWT_SECRET_KEY'] = os.getenv('JWT_SECRET_KEY', app.config['SECRET_KEY'])
 
     # Models need to be imported after db is initialized
     from . import models  # noqa: F401
+
+    # Init JWT
+    jwt.init_app(app)
 
     # Register blueprints
     from .routes.auth import auth_bp

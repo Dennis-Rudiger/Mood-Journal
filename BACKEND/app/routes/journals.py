@@ -1,6 +1,7 @@
 from flask import Blueprint, request
+from flask_jwt_extended import jwt_required, get_jwt_identity
 from .. import db
-from ..models import JournalEntry, User
+from ..models import JournalEntry
 from ..services.hf_client import EmotionService
 
 journals_bp = Blueprint('journals', __name__)
@@ -8,16 +9,12 @@ _emotion_service = EmotionService()
 
 
 @journals_bp.get('/journals')
+@jwt_required()
 def list_journals():
-    email = request.args.get('email', '').strip().lower()
-    if not email:
-        return {"success": False, "message": "email is required"}, 400
-    user = User.query.filter_by(email=email).first()
-    if not user:
-        return {"success": True, "entries": []}
+    user_id = int(get_jwt_identity())
     # Simple listing (could be paginated later)
     entries = (JournalEntry.query
-               .filter_by(user_id=user.id)
+               .filter_by(user_id=user_id)
                .order_by(JournalEntry.created_at.desc())
                .limit(100)
                .all())
@@ -36,24 +33,18 @@ def list_journals():
 
 
 @journals_bp.post('/journals')
+@jwt_required()
 def create_journal():
+    user_id = int(get_jwt_identity())
     data = request.get_json(silent=True) or {}
-    email = (data.get('email') or '').strip().lower()
     text = data.get('text', '').strip()
-
-    if not email:
-        return {"success": False, "message": "Email is required"}, 400
     if not text:
         return {"success": False, "message": "Text is required"}, 400
-
-    user = User.query.filter_by(email=email).first()
-    if not user:
-        return {"success": False, "message": "User not found"}, 404
 
     # Analyze with HF
     emotion, score = _emotion_service.classify(text)
 
-    entry = JournalEntry(user_id=user.id, text=text, emotion=emotion, score=score)
+    entry = JournalEntry(user_id=user_id, text=text, emotion=emotion, score=score)
     db.session.add(entry)
     db.session.commit()
 

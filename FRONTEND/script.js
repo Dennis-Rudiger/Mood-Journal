@@ -97,8 +97,9 @@ function analyzeSentiment(text) {
 
 const API_BASE = 'http://127.0.0.1:5000/api';
 
-async function apiFetch(path, { method = 'GET', body } = {}) {
+async function apiFetch(path, { method = 'GET', body, token } = {}) {
     const headers = { 'Content-Type': 'application/json' };
+    if (token) headers['Authorization'] = `Bearer ${token}`;
     const resp = await fetch(`${API_BASE}${path}`, {
         method,
         headers,
@@ -124,10 +125,10 @@ document.getElementById('journalForm').addEventListener('submit', function(e) {
     document.getElementById('emotionDisplay').style.display = 'none';
 
     (async () => {
-        const user = JSON.parse(localStorage.getItem('userData') || 'null');
+        const token = localStorage.getItem('userToken');
         try {
-            if (user && user.email) {
-                const resp = await apiFetch('/journals', { method: 'POST', body: { text: entryText, email: user.email } });
+            if (token) {
+                const resp = await apiFetch('/journals', { method: 'POST', body: { text: entryText }, token });
                 const entry = resp.entry;
                 // Display from backend
                 document.getElementById('emotionScore').textContent = `${entry.emotion}: ${Math.round(entry.score * 100) / 1}%`;
@@ -153,7 +154,7 @@ document.getElementById('journalForm').addEventListener('submit', function(e) {
                 document.getElementById('journalEntry').value = '';
                 return;
             }
-            throw new Error('No user, falling back');
+            throw new Error('No token, falling back');
         } catch (err) {
             // Fallback to local mock analysis
             setTimeout(() => {

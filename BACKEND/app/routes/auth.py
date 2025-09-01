@@ -1,4 +1,5 @@
 from flask import Blueprint, request
+from flask_jwt_extended import create_access_token
 from sqlalchemy.exc import IntegrityError
 from .. import db
 from ..models import User
@@ -42,4 +43,9 @@ def login():
     if not user or not user.check_password(password):
         return {"success": False, "message": "Invalid credentials"}, 401
 
-    return {"success": True, "user": {"id": user.id, "name": user.name, "email": user.email}}
+    token = create_access_token(identity=str(user.id), additional_claims={"email": user.email, "name": user.name})
+    return {
+        "success": True,
+        "token": token,
+        "user": {"id": user.id, "name": user.name, "email": user.email}
+    }
