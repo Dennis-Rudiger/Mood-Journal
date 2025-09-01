@@ -17,3 +17,19 @@ Tech Stack:
 
 #AI: Hugging Face Sentiment Analysis API
 #Payment: Paystack (optional)💸
+
+
+
+
+
+
+
+
+
+
+✅ What’s Been Built:
+Frontend Files (HTML/CSS/JS):
+index.html - Main dashboard with journal form and mood visualization
+login.html - Complete authentication system (login/register)
+style.css - Modern, responsive styling with gradient backgrounds and animations
+script.js - Frontend logic with Chart.js integration for mood trends
