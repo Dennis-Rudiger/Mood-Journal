@@ -1,11 +1,33 @@
-// Sample data to demonstrate functionality
-let journalEntries = [
+// Sample data to demonstrate functionality (used if no local data exists)
+const defaultEntries = [
     { date: '2024-08-28', text: 'Had a great day at work, feeling accomplished!', emotion: 'Happy', score: 85 },
     { date: '2024-08-27', text: 'Feeling a bit anxious about the upcoming presentation.', emotion: 'Anxious', score: 40 },
     { date: '2024-08-26', text: 'Relaxing weekend with family, very content.', emotion: 'Content', score: 78 },
     { date: '2024-08-25', text: 'Challenging day but learned a lot.', emotion: 'Mixed', score: 65 },
     { date: '2024-08-24', text: 'Excited about new opportunities!', emotion: 'Excited', score: 90 }
 ];
+
+// Load/save helpers
+function loadEntries() {
+    try {
+        const raw = localStorage.getItem('journalEntries');
+        if (!raw) return null;
+        const parsed = JSON.parse(raw);
+        return Array.isArray(parsed) ? parsed : null;
+    } catch (_) {
+        return null;
+    }
+}
+
+function saveEntries(entries) {
+    try {
+        localStorage.setItem('journalEntries', JSON.stringify(entries));
+    } catch (_) {
+        // ignore quota/serialization errors in demo
+    }
+}
+
+let journalEntries = loadEntries() || defaultEntries.slice();
 
 // Initialize Chart
 const ctx = document.getElementById('moodChart').getContext('2d');
@@ -94,7 +116,7 @@ document.getElementById('journalForm').addEventListener('submit', function(e) {
         document.getElementById('emotionDetails').textContent = getEmotionMessage(analysis.emotion, analysis.score);
         document.getElementById('emotionDisplay').style.backgroundColor = analysis.color;
         
-        // Hide loading and show results
+    // Hide loading and show results
         document.getElementById('loadingDiv').style.display = 'none';
         document.getElementById('emotionDisplay').style.display = 'block';
 
@@ -107,6 +129,7 @@ document.getElementById('journalForm').addEventListener('submit', function(e) {
         };
         
         journalEntries.unshift(newEntry);
+    saveEntries(journalEntries);
         updateRecentEntries();
         updateChart();
         updateStats();

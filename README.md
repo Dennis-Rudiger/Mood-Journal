@@ -1,35 +1,41 @@
 # Mood-Journal
-This is a Mood Journal -AI Powered Emotional Tracker😌😠😬😒
-Core Features:
 
-👨‍💻User journal entry form (HTML/CSS/JS frontend)
-Flask backend with MySQL database for storing entries
-Hugging Face API integration for sentiment analysis
-Chart.js for displaying mood trends
-User authentication (login/signup)
-Optional Paystack payment integration
+AI-powered mood journal (frontend prototype). Tracks entries, shows mood trends with Chart.js, and includes a styled auth page ready to wire to a backend.
 
-Tech Stack:
+Core Features (planned):
+- Journal entry form (HTML/CSS/JS frontend)
+- Flask backend with MySQL for storing entries
+- Hugging Face Inference API for sentiment analysis
+- Chart.js for displaying mood trends
+- User authentication (login/signup)
+- Optional Paystack subscription integration
 
-#Frontend: HTML, CSS, JavaScript, Chart.js🐥
+Current Status
+- Frontend works locally with mock AI analysis and localStorage persistence for entries.
+- Auth page is functional on the client side with demo credentials and mock API calls; real backend not yet implemented.
+- Backend, AI, and payments are not yet in this repo.
 
-#Backend: Python Flask, MySQL🐍
+Tech Stack
+- Frontend: HTML, CSS, JavaScript, Chart.js
+- Backend (planned): Python Flask, MySQL
+- AI (planned): Hugging Face Inference API
+- Payments (optional, planned): Paystack
 
-#AI: Hugging Face Sentiment Analysis API
-#Payment: Paystack (optional)💸
+What’s Included (Frontend)
+- `FRONTEND/index.html` – Dashboard with journal form and mood visualization
+- `FRONTEND/login.html` – Auth UI (login/register) with client-side validation
+- `FRONTEND/styles.css` – App styling for dashboard
+- `FRONTEND/style/auth-styles.css` – Auth page styling
+- `FRONTEND/script.js` – Frontend logic + Chart.js + localStorage persistence
+- `FRONTEND/auth-script.js` – Auth form logic with mock API and demo credentials
 
+Run Locally
+1) Open `FRONTEND/index.html` in your browser.
+2) Use the “Login / Sign Up” button to navigate to auth.
+3) Use demo login: Email `demo@moodtracker.com`, Password `demo123` (mocked on client).
 
-
-
-
-
-
-
-
-
-✅ What’s Been Built:
-Frontend Files (HTML/CSS/JS):
-index.html - Main dashboard with journal form and mood visualization
-login.html - Complete authentication system (login/register)
-style.css - Modern, responsive styling with gradient backgrounds and animations
-script.js - Frontend logic with Chart.js integration for mood trends
+Next Steps
+- Scaffold Flask backend with auth and journal CRUD.
+- Wire real endpoints in `auth-script.js` and `script.js`.
+- Integrate Hugging Face for real sentiment analysis.
+- Add `.env` management and document required keys.
