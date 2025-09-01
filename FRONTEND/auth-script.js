@@ -133,8 +133,7 @@ document.getElementById('loginFormElement').addEventListener('submit', async fun
         }
 
         if (response && response.success) {
-            // Store user token/session (in production, use secure methods)
-            localStorage.setItem('userToken', response.token);
+            // Store basic session
             localStorage.setItem('userData', JSON.stringify(response.user));
             
             // Redirect to dashboard
@@ -302,8 +301,8 @@ async function mockApiCall(endpoint, data) {
 
 // Check if user is already logged in
 function checkAuthStatus() {
-    const token = localStorage.getItem('userToken');
-    if (token) {
+    const user = JSON.parse(localStorage.getItem('userData') || 'null');
+    if (user) {
         // In production, validate token with backend
         // For now, redirect to dashboard if token exists
         window.location.href = 'index.html';

@@ -31,12 +31,12 @@ python -m pip install -r requirements.txt
 
 Copy `.env.example` to `.env` and set values.
 
-- DATABASE_URL (e.g. mysql+pymysql://user:pass@localhost/mood_journal)
-- SECRET_KEY and JWT_SECRET_KEY (random strings)
+- DATABASE_URL (e.g. mysql+pymysql://user:pass@127.0.0.1:3306/mood_journal)
+- SECRET_KEY (random string)
 - HF_API_TOKEN (Hugging Face token)
 - CORS_ORIGINS (optional, default *)
 
-4) Initialize database (SQLite by default):
+4) Initialize database (MySQL/SQLite depending on DATABASE_URL):
 
 ```powershell
 $env:FLASK_APP = (Resolve-Path .\wsgi.py)
@@ -56,9 +56,9 @@ API will be on http://127.0.0.1:5000/api
 ## Endpoints
 
 - POST /api/signup { name, email, password }
-- POST /api/login { email, password } -> { token }
-- GET /api/journals (Bearer token)
-- POST /api/journals { text } (Bearer token)
+- POST /api/login { email, password } -> { user }
+- GET /api/journals?email=...
+- POST /api/journals { email, text }
 
 ## Notes
 - Uses Hugging Face InferenceClient with model `j-hartmann/emotion-english-distilroberta-base`.

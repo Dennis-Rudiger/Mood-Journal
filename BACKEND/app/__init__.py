@@ -2,7 +2,6 @@ import os
 from flask import Flask, redirect
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
-from flask_jwt_extended import JWTManager
 from flask_cors import CORS
 from dotenv import load_dotenv
 
@@ -10,7 +9,6 @@ from dotenv import load_dotenv
 
 db = SQLAlchemy()
 migrate = Migrate()
-jwt = JWTManager()
 
 
 def create_app():
@@ -23,7 +21,6 @@ def create_app():
     app.config['SECRET_KEY'] = os.getenv('SECRET_KEY', 'dev-secret-key')
     app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URL', 'sqlite:///mood_journal.db')
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-    app.config['JWT_SECRET_KEY'] = os.getenv('JWT_SECRET_KEY', app.config['SECRET_KEY'])
 
     # CORS for frontend directory (allow all origins in dev)
     CORS(app, resources={r"/api/*": {"origins": os.getenv('CORS_ORIGINS', '*')}})
@@ -31,7 +28,7 @@ def create_app():
     # Init extensions
     db.init_app(app)
     migrate.init_app(app, db)
-    jwt.init_app(app)
+    # No JWT — using simple sessionless flows
 
     # Models need to be imported after db is initialized
     from . import models  # noqa: F401
