@@ -8,9 +8,12 @@ Hugging Face API integration for sentiment analysis
 Chart.js for displaying mood trends
 User authentication (login/signup)
 Optional Paystack payment integration
+
 Tech Stack:
 
-Frontend: HTML, CSS, JavaScript, Chart.js🐥
-Backend: Python Flask, MySQL🐍
-AI: Hugging Face Sentiment Analysis API
-Payment: Paystack (optional)💸
+#Frontend: HTML, CSS, JavaScript, Chart.js🐥
+
+#Backend: Python Flask, MySQL🐍
+
+#AI: Hugging Face Sentiment Analysis API
+#Payment: Paystack (optional)💸
