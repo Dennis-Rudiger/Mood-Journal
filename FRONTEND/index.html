@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MoodTracker - AI-Powered Emotion Journal</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="auth-section">
+        <button class="auth-btn" onclick="toggleAuth()">Login / Sign Up</button>
+    </div>
+
+    <div class="container">
+        <header>
+            <div class="logo">🔍 MoodTracker</div>
+            <div class="tagline">AI-Powered Emotional Wellness Journal</div>
+        </header>
+
+        <div class="premium-banner">
+            <h3>✨ Unlock Premium Analytics</h3>
+            <p>Get detailed mood insights, export data, and advanced charts</p>
+            <button class="pay-btn" onclick="initPaystack()">Upgrade with Paystack - $4.99/month</button>
+        </div>
+
+        <div class="main-content">
+            <div class="card journal-section">
+                <h2>📝 Write Your Journal Entry</h2>
+                <form id="journalForm">
+                    <div class="form-group">
+                        <label for="journalEntry">How are you feeling today?</label>
+                        <textarea id="journalEntry" placeholder="Express your thoughts, feelings, and experiences here. The AI will analyze the emotional tone of your entry..." required></textarea>
+                    </div>
+                    <button type="submit" class="btn">Analyze My Mood 🤖</button>
+                </form>
+
+                <div class="loading" id="loadingDiv">
+                    <p>🧠 AI is analyzing your emotions...</p>
+                </div>
+
+                <div class="emotion-display" id="emotionDisplay">
+                    <div class="emotion-score" id="emotionScore">Happy: 85%</div>
+                    <div id="emotionDetails">Your entry reflects positive emotions and optimism!</div>
+                </div>
+
+                <div class="recent-entries" id="recentEntries">
+                    <h3>📚 Recent Entries</h3>
+                    <div id="entriesList"></div>
+                </div>
+            </div>
+
+            <div class="card chart-section">
+                <h2>📊 Mood Trends</h2>
+                <div class="chart-container">
+                    <canvas id="moodChart"></canvas>
+                </div>
+                
+                <div class="mood-stats">
+                    <div class="stat-card">
+                        <div class="stat-number" id="avgMood">7.5</div>
+                        <div class="stat-label">Avg Mood</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number" id="totalEntries">12</div>
+                        <div class="stat-label">Entries</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number" id="streak">5</div>
+                        <div class="stat-label">Day Streak</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number" id="topEmotion">Happy</div>
+                        <div class="stat-label">Top Emotion</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
